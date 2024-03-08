@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.stone.common.exception.ExceptionCatch,\
-  com.stone.common.swagger.SwaggerConfiguration
+  com.stone.common.swagger.SwaggerConfiguration,\
+   com.stone.common.swagger.Swagger2Configuration

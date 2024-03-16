@@ -16,7 +16,7 @@
         <module>headlines-service</module>
         <module>headlines-gateway</module>
         <module>headlines-test</module>
-        <module>headlines-test/minio-demo</module>
+        <module>headlines-basic</module>
     </modules>
 
     <!-- 继承Spring boot工程 -->

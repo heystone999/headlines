@@ -37,6 +37,8 @@
         </#list>
     </#if>
 
+    stus集合的大小: ${stus?size}
+
 </table>
 <hr>
 
@@ -73,5 +75,9 @@
 </table>
 <hr>
 
+当前的日期为: ${today?datetime}<br>
+当前的日期为: ${today?string("yyyy年MM月")}<br>
+-----------------------------<br>
+${point?c}
 </body>
 </html>

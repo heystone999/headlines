@@ -14,7 +14,7 @@ import java.util.List;
 public class HelloController {
     @GetMapping("/basic")
     public String hello(Model model) {
-        model.addAttribute("name", "freemarker");
+//        model.addAttribute("name", "freemarker");
 
         Student student = new Student();
         student.setName("小明");
@@ -44,7 +44,7 @@ public class HelloController {
         stus.add(stu2);
 
         //向model中存放List集合数据
-        model.addAttribute("stus", stus);
+//        model.addAttribute("stus", stus);
 
         //------------------------------------
 

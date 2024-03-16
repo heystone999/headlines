@@ -46,6 +46,15 @@ public class HelloController {
         //向model中存放List集合数据
         model.addAttribute("stus", stus);
 
+        //------------------------------------
+
+        //创建Map数据
+        HashMap<String, Student> stuMap = new HashMap<>();
+        stuMap.put("stu1", stu1);
+        stuMap.put("stu2", stu2);
+        // 3.1 向model中存放Map数据
+        model.addAttribute("stuMap", stuMap);
+
         return "02-list";
     }
 }

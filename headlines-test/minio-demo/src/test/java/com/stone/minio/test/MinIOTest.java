@@ -31,22 +31,22 @@ public class MinIOTest {
      *
      * @param args
      */
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         try {
-            FileInputStream fileInputStream = new FileInputStream("headlines-test/freemarker-demo/list.html");
+            FileInputStream fileInputStream = new FileInputStream("headlines-test/freemarker-demo/index.js");
             MinioClient minioClient = MinioClient.builder().credentials("minioadmin", "minioadmin").endpoint("http://localhost:9000").build();
 
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-                    .object("list.html")
-                    .contentType("text/html")
+                    .object("plugins/js/index.js")
+                    .contentType("text/js")
                     .bucket("headlines")
                     .stream(fileInputStream, fileInputStream.available(), -1)
                     .build();
             minioClient.putObject(putObjectArgs);
 
-            System.out.println("http://localhost:9000/headlines/list.html");
+//            System.out.println("http://localhost:9000/headlines/list.html");
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }*/
+    }
 }

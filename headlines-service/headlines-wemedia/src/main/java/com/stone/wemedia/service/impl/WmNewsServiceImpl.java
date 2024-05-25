@@ -21,6 +21,7 @@ import com.stone.utils.thread.WmThreadLocalUtil;
 import com.stone.wemedia.mapper.WmMaterialMapper;
 import com.stone.wemedia.mapper.WmNewsMapper;
 import com.stone.wemedia.mapper.WmNewsMaterialMapper;
+import com.stone.wemedia.service.WmNewsAutoScanService;
 import com.stone.wemedia.service.WmNewsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +43,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     private WmNewsMaterialMapper wmNewsMaterialMapper;
     @Autowired
     private WmMaterialMapper wmMaterialMapper;
+    @Autowired
+    private WmNewsAutoScanService wmNewsAutoScanService;
 
     /**
      * 条件查询文章列表
@@ -111,6 +114,9 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
 
         // 4. 保存文章封面图片与素材的关系
         saveRelativeInfoForCover(dto, wmNews, materials);
+
+        // 审核文章
+        wmNewsAutoScanService.autoScanWmNews(wmNews.getId());
 
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }

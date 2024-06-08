@@ -12,6 +12,7 @@
         <module>headlines-user</module>
         <module>headlines-article</module>
         <module>headlines-wemedia</module>
+        <module>headlines-schedule</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
 

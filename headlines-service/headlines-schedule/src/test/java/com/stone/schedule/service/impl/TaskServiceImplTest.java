@@ -18,7 +18,7 @@ class TaskServiceImplTest {
     private TaskService taskService;
 
     @Test
-    void addTask() {
+    public void addTask() {
         Task task = new Task();
         task.setTaskType(100);
         task.setPriority(50);
@@ -27,5 +27,10 @@ class TaskServiceImplTest {
 
         long taskId = taskService.addTask(task);
         System.out.println(taskId);
+    }
+
+    @Test
+    public void cancelTask() {
+        taskService.cancelTask(1799613349533634562L);
     }
 }

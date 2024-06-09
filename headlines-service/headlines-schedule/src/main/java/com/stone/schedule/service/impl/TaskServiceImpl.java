@@ -1,6 +1,7 @@
 package com.stone.schedule.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.nacos.common.utils.StringUtils;
 import com.stone.common.constants.ScheduleConstants;
 import com.stone.common.redis.CacheService;
 import com.stone.model.schedule.dtos.Task;
@@ -152,5 +153,32 @@ public class TaskServiceImpl implements TaskService {
         } else {
             cacheService.zRemove(ScheduleConstants.FUTURE + key, JSON.toJSONString(task));
         }
+    }
+
+    /**
+     * 按照类型和优先级拉取任务
+     *
+     * @param type
+     * @param priority
+     * @return
+     */
+    @Override
+    public Task pull(int type, int priority) {
+        Task task = null;
+        try {
+            String key = type + "_" + priority;
+
+            // 从redis中拉取数据 pop
+            String task_json = cacheService.lRightPop(ScheduleConstants.TOPIC + key);
+            if (StringUtils.isNotBlank(task_json)) {
+                task = JSON.parseObject(task_json, Task.class);
+                // 修改数据库信息
+                updateDb(task.getTaskId(), ScheduleConstants.EXECUTED);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("pull task exception");
+        }
+        return task;
     }
 }

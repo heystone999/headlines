@@ -190,18 +190,22 @@ public class TaskServiceImpl implements TaskService {
      */
     @Scheduled(cron = "0 */1 * * * ?")
     public void refresh() {
-        log.info("未来数据定时刷新");
-        // 获取所有未来数据的集合key
-        Set<String> futureKeys = cacheService.scan(ScheduleConstants.FUTURE + "*");
-        for (String futureKey : futureKeys) {
-            // 获取当前数据的key topic_
-            String topicKey = ScheduleConstants.TOPIC + futureKey.split(ScheduleConstants.FUTURE)[1];
-            // 按照key和分值查询符合条件的数据
-            Set<String> tasks = cacheService.zRangeByScore(futureKey, 0, System.currentTimeMillis());
-            // 同步数据
-            if (!tasks.isEmpty()) {
-                cacheService.refreshWithPipeline(futureKey, topicKey, tasks);
-                log.info("刷新" + futureKey + "->" + topicKey);
+        String token = cacheService.tryLock("FUTURE_TASK_SYNC", 1000 * 30);
+
+        if (StringUtils.isNotBlank(token)) {
+            log.info("未来数据定时刷新");
+            // 获取所有未来数据的集合key
+            Set<String> futureKeys = cacheService.scan(ScheduleConstants.FUTURE + "*");
+            for (String futureKey : futureKeys) {
+                // 获取当前数据的key topic_
+                String topicKey = ScheduleConstants.TOPIC + futureKey.split(ScheduleConstants.FUTURE)[1];
+                // 按照key和分值查询符合条件的数据
+                Set<String> tasks = cacheService.zRangeByScore(futureKey, 0, System.currentTimeMillis());
+                // 同步数据
+                if (!tasks.isEmpty()) {
+                    cacheService.refreshWithPipeline(futureKey, topicKey, tasks);
+                    log.info("刷新" + futureKey + "->" + topicKey);
+                }
             }
         }
     }

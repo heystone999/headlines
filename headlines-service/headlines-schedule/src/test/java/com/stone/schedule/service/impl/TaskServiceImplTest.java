@@ -18,20 +18,20 @@ class TaskServiceImplTest {
     private TaskService taskService;
 
     @Test
-    public void addTask() {
+    public void testAddTask() {
         for (int i = 0; i < 5; i++) {
             Task task = new Task();
             task.setTaskType(100 + i);
             task.setPriority(50);
             task.setParameters("task test".getBytes());
-            task.setExecuteTime(new Date().getTime() + 500 * i);
+            task.setExecuteTime(new Date().getTime() + 5000 * i);
 
             long taskId = taskService.addTask(task);
         }
     }
 
     @Test
-    public void cancelTask() {
+    public void testCancelTask() {
         taskService.cancelTask(1799613349533634562L);
     }
 

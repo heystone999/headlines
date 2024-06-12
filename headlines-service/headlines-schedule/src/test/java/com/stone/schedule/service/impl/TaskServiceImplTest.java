@@ -36,8 +36,8 @@ class TaskServiceImplTest {
     }
 
     @Test
-    public void testPull() {
-        Task task = taskService.pull(100, 50);
+    public void testPoll() {
+        Task task = taskService.poll(100, 50);
         System.out.println(task);
     }
 }

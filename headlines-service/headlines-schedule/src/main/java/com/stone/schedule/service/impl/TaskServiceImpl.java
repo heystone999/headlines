@@ -168,7 +168,7 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public Task pull(int type, int priority) {
+    public Task poll(int type, int priority) {
         Task task = null;
         try {
             String key = type + "_" + priority;
@@ -182,7 +182,7 @@ public class TaskServiceImpl implements TaskService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("pull task exception");
+            log.error("poll task exception");
         }
         return task;
     }

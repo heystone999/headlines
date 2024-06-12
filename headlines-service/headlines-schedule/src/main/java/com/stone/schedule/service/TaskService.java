@@ -26,6 +26,6 @@ public interface TaskService {
      * @param priority
      * @return
      */
-    public Task pull(int type, int priority);
+    public Task poll(int type, int priority);
 
 }

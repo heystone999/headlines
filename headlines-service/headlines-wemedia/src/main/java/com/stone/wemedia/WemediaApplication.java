@@ -10,12 +10,14 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableDiscoveryClient
 @MapperScan("com.stone.wemedia.mapper")
 @EnableFeignClients(basePackages = "com.stone.apis")
 @EnableAsync
+@EnableScheduling
 public class WemediaApplication {
     public static void main(String[] args) {
         SpringApplication.run(WemediaApplication.class, args);

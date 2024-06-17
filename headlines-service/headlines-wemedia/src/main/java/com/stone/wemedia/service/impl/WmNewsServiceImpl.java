@@ -228,4 +228,31 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             saveRelativeInfo(images, wmNews.getId(), WemediaConstants.WM_COVER_REFERENCE);
         }
     }
+
+    /**
+     * 文章的上下架
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult downOrUp(WmNewsDto dto) {
+        if (dto.getId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        // 查询文章
+        WmNews wmNews = getById(dto.getId());
+        if (wmNews == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+        // 判断是否已发布
+        if (!wmNews.getStatus().equals(WmNews.Status.PUBLISHED.getCode())) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        // 修改文章enable
+        if (dto.getEnable() != null && dto.getEnable() < 2) {
+            update(Wrappers.<WmNews>lambdaUpdate().set(WmNews::getEnable, dto.getEnable()).eq(WmNews::getId, wmNews.getId()));
+        }
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
 }

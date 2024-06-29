@@ -6,6 +6,7 @@ import com.stone.article.mapper.ApArticleConfigMapper;
 import com.stone.article.mapper.ApArticleContentMapper;
 import com.stone.article.mapper.ApArticleMapper;
 import com.stone.article.service.ApArticleService;
+import com.stone.article.service.ArticleFreemarkerService;
 import com.stone.common.constants.ArticleConstants;
 import com.stone.model.article.dtos.ArticleDto;
 import com.stone.model.article.dtos.ArticleHomeDto;
@@ -34,6 +35,8 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
     private ApArticleConfigMapper apArticleConfigMapper;
     @Autowired
     private ApArticleContentMapper apArticleContentMapper;
+    @Autowired
+    private ArticleFreemarkerService articleFreemarkerService;
 
     private final static short MAX_PAGE_SIZE = 50;
 
@@ -108,6 +111,8 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
             apArticleContent.setContent(dto.getContent());
             apArticleContentMapper.updateById(apArticleContent);
         }
+        // 异步调用 生成静态文件上传到MinIO中
+        articleFreemarkerService.buildArticleToMinIO(apArticle, dto.getContent());
 
         return ResponseResult.okResult(apArticle.getId());
     }

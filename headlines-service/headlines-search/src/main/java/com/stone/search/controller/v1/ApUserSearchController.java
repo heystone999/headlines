@@ -1,9 +1,11 @@
 package com.stone.search.controller.v1;
 
 import com.stone.model.common.dtos.ResponseResult;
+import com.stone.model.search.dtos.HistorySearchDto;
 import com.stone.search.service.ApUserSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,5 +18,10 @@ public class ApUserSearchController {
     @PostMapping("/load")
     public ResponseResult findUserSearch() {
         return apUserSearchService.findUserSearch();
+    }
+
+    @PostMapping("/del")
+    public ResponseResult delUserSearch(@RequestBody HistorySearchDto dto) {
+        return apUserSearchService.delUserSearch(dto);
     }
 }

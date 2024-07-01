@@ -2,6 +2,7 @@ package com.stone.search.service.impl;
 
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
+import com.stone.model.search.dtos.HistorySearchDto;
 import com.stone.model.user.pojos.ApUser;
 import com.stone.search.pojos.ApUserSearch;
 import com.stone.search.service.ApUserSearchService;
@@ -74,5 +75,26 @@ public class ApUserSearchServiceImpl implements ApUserSearchService {
         }
         List<ApUserSearch> apUserSearches = mongoTemplate.find(Query.query(Criteria.where("userId").is(user.getId())).with(Sort.by(Sort.Direction.DESC, "createdTime")), ApUserSearch.class);
         return ResponseResult.okResult(apUserSearches);
+    }
+
+    /**
+     * 删除历史记录
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult delUserSearch(HistorySearchDto dto) {
+        if (dto.getId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+
+        ApUser user = AppThreadLocalUtil.getUser();
+        if (user == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
+        }
+
+        mongoTemplate.remove(Query.query(Criteria.where("userId").is(user.getId()).and("id").is(dto.getId())), ApUserSearch.class);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 }

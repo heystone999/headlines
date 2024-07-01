@@ -1,12 +1,14 @@
 package com.stone.search.service;
 
 import com.stone.model.common.dtos.ResponseResult;
+import com.stone.model.search.dtos.HistorySearchDto;
 
 public interface ApUserSearchService {
     /**
      * 保存用户搜索历史记录
      *
-     * @return
+     * @param keyword
+     * @param userId
      */
     public void insert(String keyword, Integer userId);
 
@@ -16,4 +18,13 @@ public interface ApUserSearchService {
      * @return
      */
     public ResponseResult findUserSearch();
+
+    /**
+     * 删除历史记录
+     *
+     * @param dto
+     * @return
+     */
+    public ResponseResult delUserSearch(HistorySearchDto dto);
+
 }

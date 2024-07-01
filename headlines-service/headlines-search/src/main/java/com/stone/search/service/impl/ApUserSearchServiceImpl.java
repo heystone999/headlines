@@ -1,7 +1,11 @@
 package com.stone.search.service.impl;
 
+import com.stone.model.common.dtos.ResponseResult;
+import com.stone.model.common.enums.AppHttpCodeEnum;
+import com.stone.model.user.pojos.ApUser;
 import com.stone.search.pojos.ApUserSearch;
 import com.stone.search.service.ApUserSearchService;
+import com.stone.utils.thread.AppThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -55,5 +59,20 @@ public class ApUserSearchServiceImpl implements ApUserSearchService {
             ApUserSearch lastUserSearch = apUserSearchList.get(apUserSearchList.size() - 1);
             mongoTemplate.findAndReplace(Query.query(Criteria.where("id").is(lastUserSearch.getId())), apUserSearch);
         }
+    }
+
+    /**
+     * 查询搜索历史
+     *
+     * @return
+     */
+    @Override
+    public ResponseResult findUserSearch() {
+        ApUser user = AppThreadLocalUtil.getUser();
+        if (user == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
+        }
+        List<ApUserSearch> apUserSearches = mongoTemplate.find(Query.query(Criteria.where("userId").is(user.getId())).with(Sort.by(Sort.Direction.DESC, "createdTime")), ApUserSearch.class);
+        return ResponseResult.okResult(apUserSearches);
     }
 }

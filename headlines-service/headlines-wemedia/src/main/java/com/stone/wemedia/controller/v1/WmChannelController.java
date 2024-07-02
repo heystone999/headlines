@@ -1,6 +1,7 @@
 package com.stone.wemedia.controller.v1;
 
 import com.stone.model.common.dtos.ResponseResult;
+import com.stone.model.wemedia.dtos.ChannelDto;
 import com.stone.model.wemedia.pojos.WmChannel;
 import com.stone.wemedia.service.WmChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,4 +23,8 @@ public class WmChannelController {
         return wmChannelService.insert(adChannel);
     }
 
+    @PostMapping("/list")
+    public ResponseResult insert(@RequestBody ChannelDto dto) {
+        return wmChannelService.findByNameAndPage(dto);
+    }
 }

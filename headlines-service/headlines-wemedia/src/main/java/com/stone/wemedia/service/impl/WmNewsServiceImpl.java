@@ -19,11 +19,13 @@ import com.stone.model.wemedia.dtos.WmNewsPageReqDto;
 import com.stone.model.wemedia.pojos.WmMaterial;
 import com.stone.model.wemedia.pojos.WmNews;
 import com.stone.model.wemedia.pojos.WmNewsMaterial;
+import com.stone.model.wemedia.pojos.WmUser;
 import com.stone.model.wemedia.vo.WmNewsVo;
 import com.stone.utils.thread.WmThreadLocalUtil;
 import com.stone.wemedia.mapper.WmMaterialMapper;
 import com.stone.wemedia.mapper.WmNewsMapper;
 import com.stone.wemedia.mapper.WmNewsMaterialMapper;
+import com.stone.wemedia.mapper.WmUserMapper;
 import com.stone.wemedia.service.WmNewsAutoScanService;
 import com.stone.wemedia.service.WmNewsService;
 import com.stone.wemedia.service.WmNewsTaskService;
@@ -53,6 +55,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     private KafkaTemplate kafkaTemplate;
     @Autowired
     private WmNewsMapper wmNewsMapper;
+    @Autowired
+    private WmUserMapper wmUserMapper;
 
     /**
      * 条件查询文章列表
@@ -288,6 +292,37 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
 
         ResponseResult responseResult = new PageResponseResult(currentPage, dto.getSize(), count);
         responseResult.setData(wmNewsVoList);
+        return responseResult;
+    }
+
+    /**
+     * 查询文章详情
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult findWmNewsVo(Integer id) {
+        if (id == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        // 查询文章信息
+        WmNews wmNews = getById(id);
+        if (wmNews == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+
+        // 查询用户信息
+        WmUser wmUser = wmUserMapper.selectById(wmNews.getUserId());
+
+        // 封装vo返回
+        WmNewsVo vo = new WmNewsVo();
+        BeanUtils.copyProperties(wmNews, vo);
+        if (wmUser != null) {
+            vo.setAuthorName(wmUser.getName());
+        }
+
+        ResponseResult responseResult = new ResponseResult().ok(vo);
         return responseResult;
     }
 }

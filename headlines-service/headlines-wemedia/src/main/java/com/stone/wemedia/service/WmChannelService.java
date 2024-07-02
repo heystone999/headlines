@@ -11,4 +11,12 @@ public interface WmChannelService extends IService<WmChannel> {
      * @return
      */
     public ResponseResult findAll();
+
+    /**
+     * 保存
+     *
+     * @param wmChannel
+     * @return
+     */
+    ResponseResult insert(WmChannel wmChannel);
 }

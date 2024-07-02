@@ -32,4 +32,9 @@ public class WmChannelController {
     public ResponseResult update(@RequestBody WmChannel adChannel) {
         return wmChannelService.update(adChannel);
     }
+
+    @GetMapping("/del/{id}")
+    public ResponseResult delete(@PathVariable("id") Integer id) {
+        return wmChannelService.delete(id);
+    }
 }

@@ -109,4 +109,35 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
         updateById(wmChannel);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
+
+    /**
+     * 删除
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult delete(Integer id) {
+        if (id == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        WmChannel wmChannel = getById(id);
+        if (wmChannel == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+
+        // 判读频道启用/禁用
+        if (wmChannel.getStatus()) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "频道有效，不能删除");
+        }
+
+        // 判读是否被引用
+        int count = wmNewsService.count(Wrappers.<WmNews>lambdaQuery().eq(WmNews::getChannelId, wmChannel.getId()).eq(WmNews::getStatus, WmNews.Status.PUBLISHED.getCode()));
+        if (count > 0) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "频道被引用不能删除");
+        }
+
+        removeById(id);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
 }

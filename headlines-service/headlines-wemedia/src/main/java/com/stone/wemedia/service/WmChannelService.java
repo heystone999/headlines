@@ -36,4 +36,12 @@ public interface WmChannelService extends IService<WmChannel> {
      * @return
      */
     ResponseResult update(WmChannel wmChannel);
+
+    /**
+     * 删除
+     *
+     * @param id
+     * @return
+     */
+    ResponseResult delete(Integer id);
 }

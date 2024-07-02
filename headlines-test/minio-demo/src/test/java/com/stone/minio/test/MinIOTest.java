@@ -38,7 +38,7 @@ public class MinIOTest {
 
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .object("plugins/js/index.js")
-                    .contentType("text/js")
+                    .contentType("text/javascript")
                     .bucket("headlines")
                     .stream(fileInputStream, fileInputStream.available(), -1)
                     .build();

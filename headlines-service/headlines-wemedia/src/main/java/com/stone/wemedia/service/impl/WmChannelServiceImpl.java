@@ -10,10 +10,13 @@ import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
 import com.stone.model.wemedia.dtos.ChannelDto;
 import com.stone.model.wemedia.pojos.WmChannel;
+import com.stone.model.wemedia.pojos.WmNews;
 import com.stone.wemedia.mapper.WmChannelMapper;
 import com.stone.wemedia.service.WmChannelService;
+import com.stone.wemedia.service.WmNewsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,8 @@ import java.util.Date;
 @Service
 @Transactional
 public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel> implements WmChannelService {
+    @Autowired
+    private WmNewsService wmNewsService;
 
     /**
      * 查询所有频道
@@ -80,5 +85,28 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
         PageResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
         responseResult.setData(page.getRecords());
         return responseResult;
+    }
+
+    /**
+     * 修改
+     *
+     * @param wmChannel
+     * @return
+     */
+    @Override
+    public ResponseResult update(WmChannel wmChannel) {
+        if (wmChannel == null || wmChannel.getId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+
+        // 判读是否被引用
+        int count = wmNewsService.count(Wrappers.<WmNews>lambdaQuery().eq(WmNews::getChannelId, wmChannel.getId()).eq(WmNews::getStatus, WmNews.Status.PUBLISHED.getCode()));
+        if (count > 0) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "频道被引用不能修改或禁用");
+        }
+
+        // 修改
+        updateById(wmChannel);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 }

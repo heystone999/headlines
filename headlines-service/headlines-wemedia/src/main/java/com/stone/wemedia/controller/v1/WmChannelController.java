@@ -27,4 +27,9 @@ public class WmChannelController {
     public ResponseResult insert(@RequestBody ChannelDto dto) {
         return wmChannelService.findByNameAndPage(dto);
     }
+
+    @PostMapping("/update")
+    public ResponseResult update(@RequestBody WmChannel adChannel) {
+        return wmChannelService.update(adChannel);
+    }
 }

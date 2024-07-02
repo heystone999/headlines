@@ -13,11 +13,13 @@ import com.stone.common.exception.CustomException;
 import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
+import com.stone.model.wemedia.dtos.NewsAuthDto;
 import com.stone.model.wemedia.dtos.WmNewsDto;
 import com.stone.model.wemedia.dtos.WmNewsPageReqDto;
 import com.stone.model.wemedia.pojos.WmMaterial;
 import com.stone.model.wemedia.pojos.WmNews;
 import com.stone.model.wemedia.pojos.WmNewsMaterial;
+import com.stone.model.wemedia.vo.WmNewsVo;
 import com.stone.utils.thread.WmThreadLocalUtil;
 import com.stone.wemedia.mapper.WmMaterialMapper;
 import com.stone.wemedia.mapper.WmNewsMapper;
@@ -49,6 +51,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     private WmNewsTaskService wmNewsTaskService;
     @Autowired
     private KafkaTemplate kafkaTemplate;
+    @Autowired
+    private WmNewsMapper wmNewsMapper;
 
     /**
      * 条件查询文章列表
@@ -263,5 +267,27 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             }
         }
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    /**
+     * 查询文章列表
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult findList(NewsAuthDto dto) {
+        dto.checkParam();
+        // 记录当前页
+        int currentPage = dto.getPage();
+
+        // 分页查询+count查询
+        dto.setPage((dto.getPage() - 1) * dto.getSize());
+        List<WmNewsVo> wmNewsVoList = wmNewsMapper.findListAndPage(dto);
+        int count = wmNewsMapper.findListCount(dto);
+
+        ResponseResult responseResult = new PageResponseResult(currentPage, dto.getSize(), count);
+        responseResult.setData(wmNewsVoList);
+        return responseResult;
     }
 }

@@ -1,6 +1,7 @@
 package com.stone.wemedia.controller.v1;
 
 import com.stone.model.common.dtos.ResponseResult;
+import com.stone.model.wemedia.dtos.NewsAuthDto;
 import com.stone.model.wemedia.dtos.WmNewsDto;
 import com.stone.model.wemedia.dtos.WmNewsPageReqDto;
 import com.stone.wemedia.service.WmNewsService;
@@ -29,5 +30,10 @@ public class WmNewsController {
     @PostMapping("/down_or_up")
     public ResponseResult downOrUp(@RequestBody WmNewsDto dto) {
         return wmNewsService.downOrUp(dto);
+    }
+
+    @PostMapping("/list_vo")
+    public ResponseResult findList(@RequestBody NewsAuthDto dto) {
+        return wmNewsService.findList(dto);
     }
 }

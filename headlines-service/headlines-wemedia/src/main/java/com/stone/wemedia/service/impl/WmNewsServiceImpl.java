@@ -1,7 +1,6 @@
 package com.stone.wemedia.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.nacos.common.utils.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -30,6 +29,7 @@ import com.stone.wemedia.service.WmNewsAutoScanService;
 import com.stone.wemedia.service.WmNewsService;
 import com.stone.wemedia.service.WmNewsTaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -324,5 +324,44 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
 
         ResponseResult responseResult = new ResponseResult().ok(vo);
         return responseResult;
+    }
+
+    /**
+     * 文章审核，修改状态
+     *
+     * @param status 2  审核失败  4 审核成功
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult updateStatus(Short status, NewsAuthDto dto) {
+        if (dto == null || dto.getId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        // 查询文章信息
+        WmNews wmNews = getById(dto.getId());
+        if (wmNews == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+
+        // 修改文章的状态
+        wmNews.setStatus(status);
+        if (StringUtils.isNotBlank(dto.getMsg())) {
+            wmNews.setReason(dto.getMsg());
+        }
+        updateById(wmNews);
+
+        // 审核成功, 则需要创建app端文章数据, 并修改自媒体文章
+        if (status.equals(WemediaConstants.WM_NEWS_AUTH_PASS)) {
+            // 创建app端文章数据
+            ResponseResult responseResult = wmNewsAutoScanService.saveAppArticle(wmNews);
+            if (responseResult.getCode().equals(200)) {
+                wmNews.setArticleId((Long) responseResult.getData());
+                wmNews.setStatus(WmNews.Status.PUBLISHED.getCode());
+                updateById(wmNews);
+            }
+        }
+
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 }

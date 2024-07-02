@@ -1,5 +1,6 @@
 package com.stone.wemedia.controller.v1;
 
+import com.stone.common.constants.WemediaConstants;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.wemedia.dtos.NewsAuthDto;
 import com.stone.model.wemedia.dtos.WmNewsDto;
@@ -37,5 +38,15 @@ public class WmNewsController {
     @GetMapping("/one_vo/{id}")
     public ResponseResult findWmNewsVo(@PathVariable("id") Integer id) {
         return wmNewsService.findWmNewsVo(id);
+    }
+
+    @PostMapping("/auth_fail")
+    public ResponseResult authFail(@RequestBody NewsAuthDto dto) {
+        return wmNewsService.updateStatus(WemediaConstants.WM_NEWS_AUTH_FAIL, dto);
+    }
+
+    @PostMapping("/auth_pass")
+    public ResponseResult authPass(@RequestBody NewsAuthDto dto) {
+        return wmNewsService.updateStatus(WemediaConstants.WM_NEWS_AUTH_PASS, dto);
     }
 }

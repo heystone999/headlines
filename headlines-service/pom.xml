@@ -14,6 +14,7 @@
         <module>headlines-wemedia</module>
         <module>headlines-schedule</module>
         <module>headlines-search</module>
+        <module>headlines-admin</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
 

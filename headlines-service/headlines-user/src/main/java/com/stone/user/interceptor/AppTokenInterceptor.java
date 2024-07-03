@@ -1,4 +1,4 @@
-package com.stone.search.interceptor;
+package com.stone.user.interceptor;
 
 import com.stone.model.user.pojos.ApUser;
 import com.stone.utils.thread.AppThreadLocalUtil;
@@ -16,6 +16,7 @@ public class AppTokenInterceptor implements HandlerInterceptor {
             ApUser apUser = new ApUser();
             apUser.setId(Integer.valueOf(userId));
             AppThreadLocalUtil.setUser(apUser);
+
         }
         return true;
     }

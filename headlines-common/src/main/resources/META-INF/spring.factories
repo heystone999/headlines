@@ -4,4 +4,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.stone.common.swagger.Swagger2Configuration,\
   com.stone.common.aliyun.GreenTextScan,\
   com.stone.common.aliyun.GreenImageScan,\
-  com.stone.common.redis.CacheService
+  com.stone.common.redis.CacheService,\
+  com.stone.common.jackson.InitJacksonConfig

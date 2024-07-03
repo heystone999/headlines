@@ -1,5 +1,6 @@
 package com.stone.model.user.dtos;
 
+import com.stone.model.common.annotation.IdEncrypt;
 import lombok.Data;
 
 @Data
@@ -7,11 +8,13 @@ public class UserRelationDto {
     /**
      * 文章作者ID
      */
+    @IdEncrypt
     Integer authorId;
 
     /**
      * 文章id
      */
+    @IdEncrypt
     Long articleId;
 
     /**

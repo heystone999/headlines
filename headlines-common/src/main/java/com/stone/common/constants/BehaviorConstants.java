@@ -5,4 +5,5 @@ public class BehaviorConstants {
     public static final String APUSER_FANS_RELATION = "APUSER-FANS-";
     public static final String LIKE_BEHAVIOR = "LIKE-BEHAVIOR-";
     public static final String UN_LIKE_BEHAVIOR = "UNLIKE-BEHAVIOR-";
+    public static final String READ_BEHAVIOR = "READ-BEHAVIOR-";
 }

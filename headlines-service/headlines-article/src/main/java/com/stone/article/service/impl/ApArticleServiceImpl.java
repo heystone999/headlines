@@ -8,13 +8,18 @@ import com.stone.article.mapper.ApArticleMapper;
 import com.stone.article.service.ApArticleService;
 import com.stone.article.service.ArticleFreemarkerService;
 import com.stone.common.constants.ArticleConstants;
+import com.stone.common.constants.BehaviorConstants;
+import com.stone.common.redis.CacheService;
 import com.stone.model.article.dtos.ArticleDto;
 import com.stone.model.article.dtos.ArticleHomeDto;
+import com.stone.model.article.dtos.ArticleInfoDto;
 import com.stone.model.article.pojos.ApArticle;
 import com.stone.model.article.pojos.ApArticleConfig;
 import com.stone.model.article.pojos.ApArticleContent;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
+import com.stone.model.user.pojos.ApUser;
+import com.stone.utils.thread.AppThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -37,6 +44,8 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
     private ApArticleContentMapper apArticleContentMapper;
     @Autowired
     private ArticleFreemarkerService articleFreemarkerService;
+    @Autowired
+    private CacheService cacheService;
 
     private final static short MAX_PAGE_SIZE = 50;
 
@@ -115,5 +124,52 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
         articleFreemarkerService.buildArticleToMinIO(apArticle, dto.getContent());
 
         return ResponseResult.okResult(apArticle.getId());
+    }
+
+    /**
+     * 加载文章详情 数据回显
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult loadArticleBehavior(ArticleInfoDto dto) {
+        if (dto == null || dto.getArticleId() == null || dto.getAuthorId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+
+        boolean isfollow = false, islike = false, isunlike = false, iscollection = false;
+        ApUser user = AppThreadLocalUtil.getUser();
+        if (user != null) {
+            // like
+            String likeBehaviorJson = (String) cacheService.hGet(BehaviorConstants.LIKE_BEHAVIOR + dto.getArticleId().toString(), user.getId().toString());
+            if (StringUtils.isNotBlank(likeBehaviorJson)) {
+                islike = true;
+            }
+            // 不喜欢
+            String unLikeBehaviorJson = (String) cacheService.hGet(BehaviorConstants.UN_LIKE_BEHAVIOR + dto.getArticleId().toString(), user.getId().toString());
+            if (StringUtils.isNotBlank(unLikeBehaviorJson)) {
+                isunlike = true;
+            }
+            // 收藏
+            String collctionJson = (String) cacheService.hGet(BehaviorConstants.COLLECTION_BEHAVIOR + user.getId(), dto.getArticleId().toString());
+            if (StringUtils.isNotBlank(collctionJson)) {
+                iscollection = true;
+            }
+            // 关注
+            Double score = cacheService.zScore(BehaviorConstants.APUSER_FOLLOW_RELATION + user.getId(), dto.getAuthorId().toString());
+            System.out.println(score);
+            if (score != null) {
+                isfollow = true;
+            }
+        }
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("isfollow", isfollow);
+        resultMap.put("islike", islike);
+        resultMap.put("isunlike", isunlike);
+        resultMap.put("iscollection", iscollection);
+
+        return ResponseResult.okResult(resultMap);
     }
 }

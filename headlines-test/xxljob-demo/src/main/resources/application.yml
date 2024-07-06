@@ -8,6 +8,6 @@ xxl:
       addresses: http://localhost:8080/xxl-job-admin
       # xxl.job.executor.appname
     executor:
-      appname: xxl-job-executor-sample
+      appname: xxl-job-sharding-executor
       port: ${executor.port:9999}
       logpath: /Users/stone/logs/xxl-job

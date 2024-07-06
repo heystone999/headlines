@@ -1,5 +1,5 @@
 server:
-  port: 8881
+  port: ${port:8881}
 
 # xxl.job.admin.addresses
 xxl:
@@ -9,5 +9,5 @@ xxl:
       # xxl.job.executor.appname
     executor:
       appname: xxl-job-executor-sample
-      port: 9999
+      port: ${executor.port:9999}
       logpath: /Users/stone/logs/xxl-job

@@ -1,5 +1,6 @@
 package com.stone.article.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stone.article.mapper.ApArticleConfigMapper;
@@ -16,6 +17,7 @@ import com.stone.model.article.dtos.ArticleInfoDto;
 import com.stone.model.article.pojos.ApArticle;
 import com.stone.model.article.pojos.ApArticleConfig;
 import com.stone.model.article.pojos.ApArticleContent;
+import com.stone.model.article.vos.HotArticleVo;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
 import com.stone.model.user.pojos.ApUser;
@@ -77,6 +79,27 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
 
         List<ApArticle> articleList = apArticleMapper.loadArticleList(dto, type);
         return ResponseResult.okResult(articleList);
+    }
+
+    /**
+     * 加载文章列表
+     *
+     * @param dto
+     * @param type
+     * @param firstPage
+     * @return
+     */
+    @Override
+    public ResponseResult loadHot(ArticleHomeDto dto, Short type, boolean firstPage) {
+        if (firstPage) {
+            String jsonStr = cacheService.get(ArticleConstants.HOT_ARTICLE_FIRST_PAGE + dto.getTag());
+            if (StringUtils.isNotBlank(jsonStr)) {
+                List<HotArticleVo> hotArticleVoList = JSON.parseArray(jsonStr, HotArticleVo.class);
+                ResponseResult responseResult = ResponseResult.okResult(hotArticleVoList);
+                return responseResult;
+            }
+        }
+        return load(dto, type);
     }
 
     /**

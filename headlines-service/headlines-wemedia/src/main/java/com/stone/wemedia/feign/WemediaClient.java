@@ -5,6 +5,7 @@ import com.stone.apis.wemedia.IWemediaClient;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
 import com.stone.model.wemedia.pojos.WmUser;
+import com.stone.wemedia.service.WmChannelService;
 import com.stone.wemedia.service.WmUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 public class WemediaClient implements IWemediaClient {
     @Autowired
     private WmUserService wmUserService;
+    @Autowired
+    private WmChannelService wmChannelService;
 
     @Override
     @GetMapping("/api/v1/user/findByName/{name}")
@@ -25,5 +28,11 @@ public class WemediaClient implements IWemediaClient {
     public ResponseResult saveWmUser(@RequestBody WmUser wmUser) {
         wmUserService.save(wmUser);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    @GetMapping("/api/v1/channel/list")
+    @Override
+    public ResponseResult getChannels() {
+        return wmChannelService.findAll();
     }
 }

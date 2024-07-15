@@ -5,8 +5,10 @@ import com.stone.apis.article.IArticleClient;
 import com.stone.apis.user.IUserClient;
 import com.stone.comment.pojos.ApComment;
 import com.stone.comment.pojos.ApCommentLike;
+import com.stone.comment.pojos.CommentVo;
 import com.stone.comment.service.CommentService;
 import com.stone.model.article.pojos.ApArticleConfig;
+import com.stone.model.comment.dtos.CommentDto;
 import com.stone.model.comment.dtos.CommentLikeDto;
 import com.stone.model.comment.dtos.CommentSaveDto;
 import com.stone.model.common.dtos.ResponseResult;
@@ -15,15 +17,16 @@ import com.stone.model.user.pojos.ApUser;
 import com.stone.utils.thread.AppThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -147,5 +150,53 @@ public class CommentServiceImpl implements CommentService {
         Map<String, Object> result = new HashMap<>();
         result.put("likes", apComment.getLikes());
         return ResponseResult.okResult(result);
+    }
+
+    /**
+     * 加载评论列表
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult findByArticleId(CommentDto dto) {
+        if (dto == null || dto.getArticleId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        int size = 10;
+
+        // 加载数据
+        Query query = Query.query(Criteria.where("entryId").is(dto.getArticleId()).and("createdTime").lt(dto.getMinDate()));
+        query.with(Sort.by(Sort.Direction.DESC, "createdTime")).limit(size);
+        List<ApComment> list = mongoTemplate.find(query, ApComment.class);
+
+        // 数据封装返回
+        ApUser user = AppThreadLocalUtil.getUser();
+        // 用户未登录
+        if (user == null) {
+            return ResponseResult.okResult(list);
+        }
+        // 用户已登录, 需要查询当前评论中的like
+        List<String> idList = list.stream().map(x -> x.getId()).collect(Collectors.toList());
+        Query query1 = Query.query(Criteria.where("commentId").in(idList).and("authorId").is(user.getId()));
+        List<ApCommentLike> apCommentLikes = mongoTemplate.find(query1, ApCommentLike.class);
+        if (apCommentLikes == null) {
+            return ResponseResult.okResult(list);
+        }
+
+        List<CommentVo> resultList = new ArrayList<>();
+        list.forEach(x -> {
+            CommentVo vo = new CommentVo();
+            BeanUtils.copyProperties(x, vo);
+            for (ApCommentLike apCommentLike : apCommentLikes) {
+                if (x.getId().equals(apCommentLike.getCommentId())) {
+                    vo.setOperation((short) 0);
+                    break;
+                }
+            }
+            resultList.add(vo);
+        });
+
+        return ResponseResult.okResult(resultList);
     }
 }

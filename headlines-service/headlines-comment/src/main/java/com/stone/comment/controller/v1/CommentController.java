@@ -1,6 +1,7 @@
 package com.stone.comment.controller.v1;
 
 import com.stone.comment.service.CommentService;
+import com.stone.model.comment.dtos.CommentDto;
 import com.stone.model.comment.dtos.CommentLikeDto;
 import com.stone.model.comment.dtos.CommentSaveDto;
 import com.stone.model.common.dtos.ResponseResult;
@@ -24,5 +25,10 @@ public class CommentController {
     @PostMapping("/like")
     public ResponseResult like(@RequestBody CommentLikeDto dto) {
         return commentService.like(dto);
+    }
+
+    @PostMapping("/load")
+    public ResponseResult findByArticleId(@RequestBody CommentDto dto) {
+        return commentService.findByArticleId(dto);
     }
 }

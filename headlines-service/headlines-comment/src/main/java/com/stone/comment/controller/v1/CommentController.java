@@ -1,6 +1,7 @@
 package com.stone.comment.controller.v1;
 
 import com.stone.comment.service.CommentService;
+import com.stone.model.comment.dtos.CommentLikeDto;
 import com.stone.model.comment.dtos.CommentSaveDto;
 import com.stone.model.common.dtos.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,5 +19,10 @@ public class CommentController {
     @PostMapping("/save")
     public ResponseResult saveComment(@RequestBody CommentSaveDto dto) {
         return commentService.saveComment(dto);
+    }
+
+    @PostMapping("/like")
+    public ResponseResult like(@RequestBody CommentLikeDto dto) {
+        return commentService.like(dto);
     }
 }

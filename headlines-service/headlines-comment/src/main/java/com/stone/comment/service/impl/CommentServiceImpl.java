@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.stone.apis.article.IArticleClient;
 import com.stone.apis.user.IUserClient;
 import com.stone.comment.pojos.ApComment;
+import com.stone.comment.pojos.ApCommentLike;
 import com.stone.comment.service.CommentService;
 import com.stone.model.article.pojos.ApArticleConfig;
+import com.stone.model.comment.dtos.CommentLikeDto;
 import com.stone.model.comment.dtos.CommentSaveDto;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
@@ -15,9 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -97,4 +103,49 @@ public class CommentServiceImpl implements CommentService {
         return true;
     }
 
+    /**
+     * 点赞
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult like(CommentLikeDto dto) {
+        if (dto == null || dto.getCommentId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+
+        ApUser user = AppThreadLocalUtil.getUser();
+        if (user == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
+        }
+        // 根据评论ID从MongoDB中获取评论对象
+        ApComment apComment = mongoTemplate.findById(dto.getCommentId(), ApComment.class);
+
+        // like
+        if (apComment != null && dto.getOperation() == 0) {
+            // 更新评论like数量
+            apComment.setLikes(apComment.getLikes() + 1);
+            mongoTemplate.save(apComment);
+            // 保存评论like数据
+            ApCommentLike apCommentLike = new ApCommentLike();
+            apCommentLike.setCommentId(apComment.getId());
+            apCommentLike.setAuthorId(user.getId());
+            mongoTemplate.save(apCommentLike);
+        } else {// cancel like
+            // 更新评论like数量
+            int tmp = apComment.getLikes() - 1;
+            tmp = tmp < 1 ? 0 : tmp;
+            apComment.setLikes(tmp);
+            mongoTemplate.save(apComment);
+
+            // 删除评论like
+            Query query = Query.query(Criteria.where("commentId").is(apComment.getId()).and("authorId").is(user.getId()));
+            mongoTemplate.remove(query, ApCommentLike.class);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("likes", apComment.getLikes());
+        return ResponseResult.okResult(result);
+    }
 }

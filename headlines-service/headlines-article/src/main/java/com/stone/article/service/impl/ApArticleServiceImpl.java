@@ -11,13 +11,16 @@ import com.stone.article.service.ArticleFreemarkerService;
 import com.stone.common.constants.ArticleConstants;
 import com.stone.common.constants.BehaviorConstants;
 import com.stone.common.redis.CacheService;
+import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.article.dtos.ArticleDto;
 import com.stone.model.article.dtos.ArticleHomeDto;
 import com.stone.model.article.dtos.ArticleInfoDto;
 import com.stone.model.article.pojos.ApArticle;
 import com.stone.model.article.pojos.ApArticleConfig;
 import com.stone.model.article.pojos.ApArticleContent;
+import com.stone.model.article.vos.ArticleCommnetVo;
 import com.stone.model.article.vos.HotArticleVo;
+import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
 import com.stone.model.user.pojos.ApUser;
@@ -194,5 +197,23 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
         resultMap.put("iscollection", iscollection);
 
         return ResponseResult.okResult(resultMap);
+    }
+
+    /**
+     * 查询文章评论统计
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public PageResponseResult findNewsComments(ArticleCommentDto dto) {
+        Integer page = dto.getPage();
+        dto.setPage((dto.getPage() - 1) * dto.getSize());
+        List<ArticleCommnetVo> list = apArticleMapper.findNewsComments(dto);
+        int count = apArticleMapper.findNewsCommentsCount(dto);
+
+        PageResponseResult responseResult = new PageResponseResult(page, dto.getSize(), count);
+        responseResult.setData(list);
+        return responseResult;
     }
 }

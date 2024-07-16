@@ -1,6 +1,7 @@
 package com.stone.comment.controller.v1;
 
 import com.stone.comment.service.CommentRepayService;
+import com.stone.model.comment.dtos.CommentRepayLikeDto;
 import com.stone.model.comment.dtos.CommentRepaySaveDto;
 import com.stone.model.common.dtos.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,5 +19,10 @@ public class CommentRepayController {
     @PostMapping("/save")
     public ResponseResult saveCommentRepay(@RequestBody CommentRepaySaveDto dto) {
         return commentRepayService.saveCommentRepay(dto);
+    }
+
+    @PostMapping("/like")
+    public ResponseResult saveCommentRepayLike(@RequestBody CommentRepayLikeDto dto) {
+        return commentRepayService.saveCommentRepayLike(dto);
     }
 }

@@ -1,6 +1,7 @@
 package com.stone.comment.controller.v1;
 
 import com.stone.comment.service.CommentRepayService;
+import com.stone.model.comment.dtos.CommentRepayDto;
 import com.stone.model.comment.dtos.CommentRepayLikeDto;
 import com.stone.model.comment.dtos.CommentRepaySaveDto;
 import com.stone.model.common.dtos.ResponseResult;
@@ -24,5 +25,10 @@ public class CommentRepayController {
     @PostMapping("/like")
     public ResponseResult saveCommentRepayLike(@RequestBody CommentRepayLikeDto dto) {
         return commentRepayService.saveCommentRepayLike(dto);
+    }
+
+    @PostMapping("/load")
+    public ResponseResult loadCommentRepay(@RequestBody CommentRepayDto dto) {
+        return commentRepayService.loadCommentRepay(dto);
     }
 }

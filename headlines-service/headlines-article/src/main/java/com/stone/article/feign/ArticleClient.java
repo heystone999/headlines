@@ -7,6 +7,7 @@ import com.stone.article.service.ApArticleService;
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.article.dtos.ArticleDto;
 import com.stone.model.article.pojos.ApArticleConfig;
+import com.stone.model.comment.dtos.CommentConfigDto;
 import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,13 @@ public class ArticleClient implements IArticleClient {
 
     @PostMapping("/api/v1/article/findNewsComments")
     @Override
-    public PageResponseResult findNewsComments(ArticleCommentDto dto) {
+    public PageResponseResult findNewsComments(@RequestBody ArticleCommentDto dto) {
         return apArticleService.findNewsComments(dto);
+    }
+
+    @PostMapping("/api/v1/article/updateCommentStatus")
+    @Override
+    public ResponseResult updateCommentStatus(@RequestBody CommentConfigDto dto) {
+        return apArticleConfigService.updateCommentStatus(dto);
     }
 }

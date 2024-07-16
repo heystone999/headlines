@@ -1,7 +1,9 @@
 package com.stone.wemedia.controller.v1;
 
 import com.stone.model.article.dtos.ArticleCommentDto;
+import com.stone.model.comment.dtos.CommentConfigDto;
 import com.stone.model.common.dtos.PageResponseResult;
+import com.stone.model.common.dtos.ResponseResult;
 import com.stone.wemedia.service.CommentManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,5 +20,10 @@ public class CommentManageController {
     @PostMapping("/find_news_comments")
     public PageResponseResult findNewsComments(@RequestBody ArticleCommentDto dto) {
         return commentManageService.findNewsComments(dto);
+    }
+
+    @PostMapping("/update_comment_status")
+    public ResponseResult updateCommentStatus(@RequestBody CommentConfigDto dto) {
+        return commentManageService.updateCommentStatus(dto);
     }
 }

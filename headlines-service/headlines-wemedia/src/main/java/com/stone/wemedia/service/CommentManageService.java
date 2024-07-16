@@ -1,7 +1,9 @@
 package com.stone.wemedia.service;
 
 import com.stone.model.article.dtos.ArticleCommentDto;
+import com.stone.model.comment.dtos.CommentConfigDto;
 import com.stone.model.common.dtos.PageResponseResult;
+import com.stone.model.common.dtos.ResponseResult;
 
 public interface CommentManageService {
     /**
@@ -11,4 +13,12 @@ public interface CommentManageService {
      * @return
      */
     PageResponseResult findNewsComments(ArticleCommentDto dto);
+
+    /**
+     * 打开或关闭评论
+     *
+     * @param dto
+     * @return
+     */
+    ResponseResult updateCommentStatus(CommentConfigDto dto);
 }

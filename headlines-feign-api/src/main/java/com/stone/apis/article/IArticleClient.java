@@ -3,6 +3,7 @@ package com.stone.apis.article;
 import com.stone.apis.article.fallback.IArticleClientFallback;
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.article.dtos.ArticleDto;
+import com.stone.model.comment.dtos.CommentConfigDto;
 import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -22,4 +23,7 @@ public interface IArticleClient {
 
     @PostMapping("/api/v1/article/findNewsComments")
     PageResponseResult findNewsComments(@RequestBody ArticleCommentDto dto);
+
+    @PostMapping("/api/v1/article/updateCommentStatus")
+    ResponseResult updateCommentStatus(@RequestBody CommentConfigDto dto);
 }

@@ -3,6 +3,7 @@ package com.stone.apis.article.fallback;
 import com.stone.apis.article.IArticleClient;
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.article.dtos.ArticleDto;
+import com.stone.model.comment.dtos.CommentConfigDto;
 import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.common.enums.AppHttpCodeEnum;
@@ -26,5 +27,10 @@ public class IArticleClientFallback implements IArticleClient {
         responseResult.setCode(501);
         responseResult.setErrorMessage("获取数据失败");
         return responseResult;
+    }
+
+    @Override
+    public ResponseResult updateCommentStatus(CommentConfigDto dto) {
+        return ResponseResult.errorResult(AppHttpCodeEnum.SERVER_ERROR, "获取数据失败");
     }
 }

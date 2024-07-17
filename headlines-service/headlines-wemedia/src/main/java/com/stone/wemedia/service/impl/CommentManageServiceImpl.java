@@ -227,4 +227,20 @@ public class CommentManageServiceImpl implements CommentManageService {
 
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
+
+    /**
+     * 删除评论回复
+     *
+     * @param commentRepayId
+     * @return
+     */
+    @Override
+    public ResponseResult delCommentRepay(String commentRepayId) {
+        if (StringUtils.isBlank(commentRepayId)) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "评论回复id不能为空");
+        }
+
+        mongoTemplate.remove(Query.query(Criteria.where("id").is(commentRepayId)), ApCommentRepay.class);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
 }

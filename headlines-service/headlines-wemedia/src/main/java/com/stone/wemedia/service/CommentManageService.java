@@ -56,4 +56,12 @@ public interface CommentManageService {
      * @return
      */
     ResponseResult delComment(String commentId);
+
+    /**
+     * 删除评论回复
+     *
+     * @param commentRepayId
+     * @return
+     */
+    ResponseResult delCommentRepay(String commentRepayId);
 }

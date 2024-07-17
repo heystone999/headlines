@@ -46,4 +46,9 @@ public class CommentManageController {
     public ResponseResult delComment(@PathVariable("commentId") String commentId) {
         return commentManageService.delComment(commentId);
     }
+
+    @DeleteMapping("/del_comment_repay/{commentRepayId}")
+    public ResponseResult delCommentRepay(@PathVariable("commentRepayId") String commentRepayId) {
+        return commentManageService.delCommentRepay(commentRepayId);
+    }
 }

@@ -2,6 +2,7 @@ package com.stone.wemedia.controller.v1;
 
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.comment.dtos.CommentConfigDto;
+import com.stone.model.comment.dtos.CommentManageDto;
 import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.wemedia.service.CommentManageService;
@@ -25,5 +26,10 @@ public class CommentManageController {
     @PostMapping("/update_comment_status")
     public ResponseResult updateCommentStatus(@RequestBody CommentConfigDto dto) {
         return commentManageService.updateCommentStatus(dto);
+    }
+
+    @PostMapping("/list")
+    public ResponseResult list(@RequestBody CommentManageDto dto) {
+        return commentManageService.list(dto);
     }
 }

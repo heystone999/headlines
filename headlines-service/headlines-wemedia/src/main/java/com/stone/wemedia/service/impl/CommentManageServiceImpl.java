@@ -3,23 +3,25 @@ package com.stone.wemedia.service.impl;
 import com.stone.apis.article.IArticleClient;
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.comment.dtos.CommentConfigDto;
+import com.stone.model.comment.dtos.CommentManageDto;
 import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.model.wemedia.pojos.WmUser;
 import com.stone.utils.thread.WmThreadLocalUtil;
 import com.stone.wemedia.mapper.WmUserMapper;
-import com.stone.wemedia.pojos.ApComment;
-import com.stone.wemedia.pojos.ApCommentLike;
-import com.stone.wemedia.pojos.ApCommentRepay;
-import com.stone.wemedia.pojos.ApCommentRepayLike;
+import com.stone.wemedia.pojos.*;
 import com.stone.wemedia.service.CommentManageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,5 +81,35 @@ public class CommentManageServiceImpl implements CommentManageService {
 
         // 修改app文章的config配置
         return articleClient.updateCommentStatus(dto);
+    }
+
+    /**
+     * 查询评论列表
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult list(CommentManageDto dto) {
+        List<CommentRepayListVo> commentRepayListVoList = new ArrayList<>();
+        Query query = Query.query(Criteria.where("entryId").is(dto.getArticleId()));
+        // 这里减1是因为mongoDB skip(0)
+        Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getSize());
+        query.with(pageable);
+        query.with(Sort.by(Sort.Direction.DESC, "createdTime"));
+
+        // query
+        List<ApComment> apCommentList = mongoTemplate.find(query, ApComment.class);
+        for (ApComment apComment : apCommentList) {
+            CommentRepayListVo vo = new CommentRepayListVo();
+            vo.setApComments(apComment);
+            Query query2 = Query.query(Criteria.where("commentId").is(apComment.getId()));
+            query2.with(Sort.by(Sort.Direction.DESC, "createdTime"));
+            List<ApCommentRepay> apCommentRepays = mongoTemplate.find(query2, ApCommentRepay.class);
+            vo.setApCommentRepays(apCommentRepays);
+
+            commentRepayListVoList.add(vo);
+        }
+        return ResponseResult.okResult(commentRepayListVoList);
     }
 }

@@ -2,6 +2,7 @@ package com.stone.wemedia.service;
 
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.comment.dtos.CommentConfigDto;
+import com.stone.model.comment.dtos.CommentManageDto;
 import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 
@@ -21,4 +22,12 @@ public interface CommentManageService {
      * @return
      */
     ResponseResult updateCommentStatus(CommentConfigDto dto);
+
+    /**
+     * 查询评论列表
+     *
+     * @param dto
+     * @return
+     */
+    ResponseResult list(CommentManageDto dto);
 }

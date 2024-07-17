@@ -2,6 +2,7 @@ package com.stone.wemedia.service;
 
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.comment.dtos.CommentConfigDto;
+import com.stone.model.comment.dtos.CommentLikeDto;
 import com.stone.model.comment.dtos.CommentManageDto;
 import com.stone.model.comment.dtos.CommentRepaySaveDto;
 import com.stone.model.common.dtos.PageResponseResult;
@@ -39,4 +40,12 @@ public interface CommentManageService {
      * @return
      */
     ResponseResult saveCommentRepay(CommentRepaySaveDto dto);
+
+    /**
+     * like评论
+     *
+     * @param dto
+     * @return
+     */
+    ResponseResult like(CommentLikeDto dto);
 }

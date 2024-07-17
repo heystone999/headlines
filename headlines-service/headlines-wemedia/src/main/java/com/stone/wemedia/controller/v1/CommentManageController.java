@@ -2,6 +2,7 @@ package com.stone.wemedia.controller.v1;
 
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.comment.dtos.CommentConfigDto;
+import com.stone.model.comment.dtos.CommentLikeDto;
 import com.stone.model.comment.dtos.CommentManageDto;
 import com.stone.model.comment.dtos.CommentRepaySaveDto;
 import com.stone.model.common.dtos.PageResponseResult;
@@ -38,4 +39,10 @@ public class CommentManageController {
     public ResponseResult saveCommentRepay(@RequestBody CommentRepaySaveDto dto) {
         return commentManageService.saveCommentRepay(dto);
     }
+
+    @PostMapping("/like")
+    public ResponseResult like(@RequestBody CommentLikeDto dto) {
+        return commentManageService.like(dto);
+    }
+
 }

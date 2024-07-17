@@ -1,17 +1,22 @@
 package com.stone.wemedia.service.impl;
 
 import com.stone.apis.article.IArticleClient;
+import com.stone.apis.user.IUserClient;
 import com.stone.model.article.dtos.ArticleCommentDto;
 import com.stone.model.comment.dtos.CommentConfigDto;
 import com.stone.model.comment.dtos.CommentManageDto;
+import com.stone.model.comment.dtos.CommentRepaySaveDto;
 import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
+import com.stone.model.common.enums.AppHttpCodeEnum;
+import com.stone.model.user.pojos.ApUser;
 import com.stone.model.wemedia.pojos.WmUser;
 import com.stone.utils.thread.WmThreadLocalUtil;
 import com.stone.wemedia.mapper.WmUserMapper;
 import com.stone.wemedia.pojos.*;
 import com.stone.wemedia.service.CommentManageService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +27,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +40,8 @@ public class CommentManageServiceImpl implements CommentManageService {
     private WmUserMapper wmUserMapper;
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private IUserClient userClient;
 
     /**
      * 查看文章评论列表
@@ -111,5 +119,48 @@ public class CommentManageServiceImpl implements CommentManageService {
             commentRepayListVoList.add(vo);
         }
         return ResponseResult.okResult(commentRepayListVoList);
+    }
+
+    /**
+     * 回复评论
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult saveCommentRepay(CommentRepaySaveDto dto) {
+        if (dto == null || StringUtils.isBlank(dto.getContent()) || dto.getCommentId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        if (dto.getContent().length() > 140) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "评论内容不能超过140字");
+        }
+
+        WmUser wmUser = WmThreadLocalUtil.getUser();
+        WmUser dbUser = wmUserMapper.selectById(wmUser.getId());
+        if (dbUser == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
+        }
+
+        // 获取app端用户信息
+        ApUser apUser = userClient.findUserById(dbUser.getApUserId());
+        // 保存评论
+        ApCommentRepay apCommentRepay = new ApCommentRepay();
+        apCommentRepay.setAuthorId(apUser.getId());
+        apCommentRepay.setAuthorName(apUser.getName());
+        apCommentRepay.setContent(dto.getContent());
+        apCommentRepay.setCreatedTime(new Date());
+        apCommentRepay.setCommentId(dto.getCommentId());
+
+        apCommentRepay.setUpdatedTime(new Date());
+        apCommentRepay.setLikes(0);
+        mongoTemplate.save(apCommentRepay);
+
+        // 更新回复数量
+        ApComment apComment = mongoTemplate.findById(dto.getCommentId(), ApComment.class);
+        apComment.setReply(apComment.getReply() + 1);
+        mongoTemplate.save(apComment);
+
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 }

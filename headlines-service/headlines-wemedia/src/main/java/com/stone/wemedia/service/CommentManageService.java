@@ -48,4 +48,12 @@ public interface CommentManageService {
      * @return
      */
     ResponseResult like(CommentLikeDto dto);
+
+    /**
+     * 删除评论
+     *
+     * @param commentId
+     * @return
+     */
+    ResponseResult delComment(String commentId);
 }

@@ -9,10 +9,7 @@ import com.stone.model.common.dtos.PageResponseResult;
 import com.stone.model.common.dtos.ResponseResult;
 import com.stone.wemedia.service.CommentManageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/comment/manage")
@@ -45,4 +42,8 @@ public class CommentManageController {
         return commentManageService.like(dto);
     }
 
+    @DeleteMapping("/del_comment/{commentId}")
+    public ResponseResult delComment(@PathVariable("commentId") String commentId) {
+        return commentManageService.delComment(commentId);
+    }
 }

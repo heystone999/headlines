@@ -213,4 +213,18 @@ public class CommentManageServiceImpl implements CommentManageService {
         result.put("likes", apComment.getLikes());
         return ResponseResult.okResult(result);
     }
+
+    @Override
+    public ResponseResult delComment(String commentId) {
+        if (StringUtils.isBlank(commentId)) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "评论id不能为空");
+        }
+
+        // 删除评论
+        mongoTemplate.remove(Query.query(Criteria.where("id").is(commentId)), ApComment.class);
+        // 删除该评论的所有的回复内容
+        mongoTemplate.remove(Query.query(Criteria.where("commentId").is(commentId)), ApCommentRepay.class);
+
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
 }
